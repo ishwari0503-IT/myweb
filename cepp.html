@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>HostelHub – Smart Daily Planner (Full)</title>
+
+    <style>
+        /* ========== THEME & LAYOUT ========== */
+        :root {
+            --bg: #f6fbff;
+            --card: #ffffff;
+            --accent: #6fc3b8;
+            --accent2: #6fa8ff;
+            --muted: #667085;
+            --danger: #ef5350;
+            --success: #4caf50;
+            --radius: 12px;
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background: linear-gradient(180deg, #f6fbff, #eef6ff);
+            color: #102027
+        }
+
+        .wrap {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 18px;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 18px
+        }
+
+        header {
+            grid-column: 1/-1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px;
+            border-radius: var(--radius);
+            background: var(--card);
+            box-shadow: 0 6px 18px rgba(28, 40, 50, .06)
+        }
+
+        .logo {
+            display: flex;
+            gap: 14px;
+            align-items: center
+        }
+
+        .logo .box {
+            width: 54px;
+            height: 54px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 800
+        }
+
+        header nav {
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+
+        nav a {
+            color: var(--muted);
+            text-decoration: none;
+            padding: 8px 10px;
+            border-radius: 10px
+        }
+
+        nav a.primary {
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            color: #fff
+        }
+
+        /* left column */
+        .left {
+            background: var(--card);
+            padding: 14px;
+            border-radius: var(--radius);
+            box-shadow: 0 6px 18px rgba(28, 40, 50, .04)
+        }
+
+        .profile {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px
+        }
+
+        .avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f7c6d6, #fbd6a5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700
+        }
+
+        .small {
+            font-size: 13px;
+            color: var(--muted)
+        }
+
+        .card {
+            background: var(--card);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03)
+        }
+
+        .menu button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 10px;
+            border: 0;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer
+        }
+
+        .menu button:hover {
+            background: #f1fbf9
+        }
+
+        /* main area */
+        main {
+            padding: 0
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 14px
+        }
+
+        .planner {
+            padding: 12px;
+            border-radius: 12px
+        }
+
+        h2 {
+            margin: 0 0 12px 0;
+            color: #0f4461
+        }
+
+        /* 24h planner grid */
+        .hours {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px
+        }
+
+        .hour {
+            padding: 8px;
+            border-radius: 8px;
+            background: linear-gradient(180deg, #fff, #fbfdff);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            min-height: 64px;
+            position: relative;
+            font-size: 13px
+        }
+
+        .hour .label {
+            font-weight: 700;
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 6px
+        }
+
+        .hour .events {
+            display: flex;
+            flex-direction: column;
+            gap: 6px
+        }
+
+        .event-tag {
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            color: #fff;
+            padding: 6px;
+            border-radius: 8px;
+            font-size: 12px
+        }
+
+        .sleep-block {
+            position: relative;
+            padding: 6px;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #ffecb3, #ffe082);
+            border: 1px dashed rgba(0, 0, 0, 0.06)
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 10px;
+            flex-wrap: wrap
+        }
+
+        input[type="time"],
+        input[type="number"],
+        select,
+        input[type="text"] {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        button.btn {
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 0;
+            cursor: pointer
+        }
+
+        button.primary {
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            color: #fff
+        }
+
+        button.ghost {
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06)
+        }
+
+        /* To-do area */
+        .todo {
+            padding: 12px;
+            border-radius: 12px
+        }
+
+        .todo-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 360px;
+            overflow: auto;
+            padding-right: 6px
+        }
+
+        .task {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #fff, #fbfdff);
+            border: 1px solid rgba(0, 0, 0, 0.03)
+        }
+
+        .task .left {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 8px
+        }
+
+        .priority-high {
+            background: #ffebee;
+            color: #c62828
+        }
+
+        .priority-medium {
+            background: #fff3e0;
+            color: #ef6c00
+        }
+
+        .priority-low {
+            background: #e8f5e9;
+            color: #2e7d32
+        }
+
+        .status-completed {
+            color: var(--success);
+            font-weight: 700
+        }
+
+        .status-pending {
+            color: var(--muted);
+            font-weight: 700
+        }
+
+        .task-controls {
+            display: flex;
+            gap: 6px
+        }
+
+        .small-muted {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        /* reminders list */
+        .reminders {
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        /* weekly dashboard */
+        .dashboard {
+            padding: 12px;
+            border-radius: 12px
+        }
+
+        .bar {
+            height: 10px;
+            background: #e6f4f2;
+            border-radius: 8px;
+            overflow: hidden
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            width: 0%
+        }
+
+        /* notes */
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            padding: 10px;
+            resize: vertical
+        }
+
+        /* responsive */
+        @media(max-width:1000px) {
+            .wrap {
+                grid-template-columns: 1fr;
+                padding: 12px
+            }
+
+            .grid {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <header>
+            <div class="logo">
+                <div class="box">HH</div>
+                <div>
+                    <div style="font-weight:800;font-size:18px">HostelHub</div>
+                    <div class="small">Smart Daily Planner</div>
+                </div>
+            </div>
+
+            <nav>
+                <a href="#" class="small">Dashboard</a>
+                <a href="#" class="small">Planner</a>
+                <a href="#" class="small primary">Start</a>
+            </nav>
+        </header>
+
+        <!-- LEFT -->
+        <aside class="left">
+            <div class="profile">
+                <div class="avatar">IK</div>
+                <div>
+                    <div style="font-weight:700">Ishwari Kushare</div>
+                    <div class="small">Hostel Maple • Room 204</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="font-weight:700;margin-bottom:8px">24-Hour Sleep Planner</div>
+                <div class="small">Set your sleep start and length (editable)</div>
+                <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+                    <label class="small-muted">Sleep start</label>
+                    <input id="sleepStart" type="time" value="23:00">
+                    <label class="small-muted">Hours</label>
+                    <input id="sleepHours" type="number" min="4" max="10" value="7" style="width:72px">
+                </div>
+                <div style="margin-top:10px;display:flex;gap:8px">
+                    <button id="applySleep" class="btn primary">Apply</button>
+                    <button id="resetSleep" class="btn ghost">Reset</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="font-weight:700;margin-bottom:8px">Progress Tracker</div>
+                <div class="small">Tasks completed today</div>
+                <div style="margin-top:8px" class="bar">
+                    <div id="progressFill" class="bar-fill"></div>
+                </div>
+                <div style="margin-top:8px" id="progressText" class="small-muted">0 / 0 tasks • 0%</div>
+            </div>
+
+            <div class="card">
+                <div style="font-weight:700;margin-bottom:8px">Weekly Dashboard</div>
+                <div class="small">Completed tasks per day</div>
+                <div id="weekStats" style="margin-top:10px;display:flex;flex-direction:column;gap:8px"></div>
+            </div>
+
+            <div class="card">
+                <div style="font-weight:700;margin-bottom:8px">Reminders (upcoming)</div>
+                <div id="reminderList" class="reminders small-muted">No reminders set</div>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main>
+            <div class="grid">
+                <section>
+                    <div class="card planner">
+                        <h2>24-Hour Planner</h2>
+                        <div class="small">Click an hour to add a planned event. Sleep block shows separately.</div>
+
+                        <!-- 24 hour grid (6 columns x 4 rows = 24) -->
+                        <div id="hoursGrid" class="hours" style="margin-top:12px"></div>
+
+                        <div class="controls-row" style="margin-top:12px">
+                            <button id="clearDay" class="btn ghost">Clear Day</button>
+                            <div class="small-muted" id="plannerHint">Double-click event to edit</div>
+                        </div>
+                    </div>
+
+                    <!-- To-do / Reminders -->
+                    <div class="card todo" style="margin-top:12px">
+                        <h2>To-Do • Tasks</h2>
+
+                        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+                            <input id="taskTitle" type="text" placeholder="Task title" style="flex:1">
+                            <select id="taskPriority">
+                                <option value="high">High</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                            <select id="taskStatus">
+                                <option value="pending" selected>Pending</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+
+                        <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+                            <input id="taskDue" type="date">
+                            <input id="taskTime" type="time">
+                            <button id="addTask" class="btn primary">Add Task</button>
+                        </div>
+
+                        <div style="margin-top:12px" class="todo-list" id="taskList"></div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="card" style="margin-top:12px">
+                        <h2>Notes</h2>
+                        <textarea id="notesArea" placeholder="Write notes, lists, reminders..."></textarea>
+                        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+                            <button id="saveNotes" class="btn primary">Save Notes</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- RIGHT WIDGETS -->
+                <aside>
+                    <div class="card">
+                        <h3 style="margin:0">Set Reminder Manually</h3>
+                        <div class="small-muted" style="margin-top:6px">Create a one-time quick reminder</div>
+                        <div style="display:flex;gap:8px;margin-top:8px">
+                            <input id="quickRemText" type="text" placeholder="Reminder text" style="flex:1">
+                            <input id="quickRemDate" type="date">
+                            <input id="quickRemTime" type="time">
+                        </div>
+                        <div style="display:flex;gap:8px;margin-top:8px">
+                            <button id="setQuickRem" class="btn primary">Set</button>
+                            <button id="clearRems" class="btn ghost">Clear All</button>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top:12px">
+                        <h3 style="margin:0">Weekly Summary</h3>
+                        <div class="small-muted" style="margin-top:8px">Total tasks & completions this week</div>
+                        <div id="weeklySummary" style="margin-top:10px"></div>
+                    </div>
+
+                    <div class="card" style="margin-top:12px">
+                        <h3 style="margin:0">Help & Tips</h3>
+                        <ul class="small-muted" style="margin-top:8px;padding-left:18px">
+                            <li>Click hour → add event</li>
+                            <li>Use Sleep controls (left) to set nightly sleep</li>
+                            <li>Reminders work while page is open (or will trigger notifications if granted)</li>
+                        </ul>
+                    </div>
+                </aside>
+
+            </div>
+        </main>
+
+        <footer>
+            “Small steps every day lead to big success.” • HostelHub Planner
+        </footer>
+
+    </div>
+
+    <script>
+        /*************************************************************************
+         * HostelHub Planner JS - implements:
+         * - 24h planner with editable sleep block
+         * - To-do list with add/edit/delete/status/priority
+         * - Reminders (schedules notifications/alerts while app is open)
+         * - Weekly dashboard + progress tracker
+         * - Notes saved to localStorage
+         *
+         * Data model stored in localStorage under keys:
+         *  - hh_planner_events (array of events with hour index)
+         *  - hh_tasks (array of tasks)
+         *  - hh_sleep (object {start: "23:00", hours:7})
+         *  - hh_notes (string)
+         *  - hh_reminders (array)
+         *************************************************************************/
+
+        // ---------- Utilities ----------
+        const $ = (id) => document.getElementById(id);
+        const ls = (k, v = null) => { if (v === null) return JSON.parse(localStorage.getItem(k) || 'null'); localStorage.setItem(k, JSON.stringify(v)); }
+
+        // request notification permission early
+        if ("Notification" in window && Notification.permission !== "granted") {
+            Notification.requestPermission().catch(() => { });
+        }
+
+        // ---------- Initialization ----------
+        const hoursGrid = $('hoursGrid');
+        const taskList = $('taskList');
+        const sleepStartInput = $('sleepStart');
+        const sleepHoursInput = $('sleepHours');
+        const applySleepBtn = $('applySleep');
+        const resetSleepBtn = $('resetSleep');
+        const clearDayBtn = $('clearDay');
+        const progressFill = $('progressFill');
+        const progressText = $('progressText');
+        const weekStats = $('weekStats');
+        const notesArea = $('notesArea');
+        const saveNotesBtn = $('saveNotes');
+        const reminderList = $('reminderList');
+        const setQuickRemBtn = $('setQuickRem');
+        const clearRemsBtn = $('clearRems');
+        const weeklySummary = $('weeklySummary');
+
+        // Data holders
+        let plannerEvents = ls('hh_planner_events') || Array(24).fill(null); // each slot: {title, color}
+        let tasks = ls('hh_tasks') || []; // {id, title, priority, status, due, time, reminderId}
+        let sleep = ls('hh_sleep') || { start: '23:00', hours: 7 };
+        let notes = localStorage.getItem('hh_notes') || '';
+        let reminders = ls('hh_reminders') || []; // {id, text, datetime, triggered:false}
+        let reminderTimers = {}; // in-memory timers so we can cancel
+
+        // populate UI helpers
+        function buildHoursGrid() {
+            hoursGrid.innerHTML = '';
+            for (let h = 0; h < 24; h++) {
+                const el = document.createElement('div');
+                el.className = 'hour';
+                el.dataset.hour = h;
+                const hourLabel = formatHourLabel(h);
+                el.innerHTML = `<div class="label">${hourLabel}</div><div class="events"></div>`;
+                // click to add event
+                el.addEventListener('click', () => openAddEventDialog(h));
+                hoursGrid.appendChild(el);
+            }
+            renderPlannerEvents();
+        }
+
+        function formatHourLabel(h) {
+            const hh = h.toString().padStart(2, '0') + ':00';
+            const ampm = (h < 12 ? (h === 0 ? '12 AM' : (h + ' AM')) : (h === 12 ? '12 PM' : (h - 12 + ' PM')));
+            return `${hh} • ${ampm}`;
+        }
+
+        // render planner events and sleep block
+        function renderPlannerEvents() {
+            // clear all first
+            document.querySelectorAll('.hour').forEach(hourEl => {
+                const eventsEl = hourEl.querySelector('.events');
+                eventsEl.innerHTML = '';
+            });
+
+            // add scheduled events
+            plannerEvents.forEach((ev, h) => {
+                if (ev) {
+                    const hourEl = hoursGrid.querySelector(`.hour[data-hour="${h}"]`);
+                    const eventsEl = hourEl.querySelector('.events');
+                    const tag = document.createElement('div');
+                    tag.className = 'event-tag';
+                    tag.textContent = ev.title;
+                    tag.title = 'Double-click to edit';
+                    tag.addEventListener('dblclick', (e) => {
+                        e.stopPropagation();
+                        openEditEventDialog(h);
+                    });
+                    eventsEl.appendChild(tag);
+                }
+            });
+
+            // render sleep block overlay: mark hours that are sleep
+            const sleepSlots = computeSleepSlots(sleep.start, sleep.hours);
+            // remove existing sleep labels
+            document.querySelectorAll('.hour .sleep-block').forEach(n => n.remove());
+            sleepSlots.forEach(h => {
+                const hourEl = hoursGrid.querySelector(`.hour[data-hour="${h}"]`);
+                const eventsEl = hourEl.querySelector('.events');
+                const sb = document.createElement('div');
+                sb.className = 'sleep-block';
+                sb.textContent = 'Sleep';
+                eventsEl.prepend(sb);
+            });
+        }
+
+        // compute sleep slots array of hour indices (0..23)
+        function computeSleepSlots(startTime, hours) {
+            // startTime is "HH:MM"
+            const [hh, mm] = startTime.split(':').map(Number);
+            const start = hh; // align to hour slot for simplicity
+            const count = Math.max(4, Math.min(12, Math.round(hours)));
+            const arr = [];
+            for (let i = 0; i < count; i++) {
+                arr.push((start + i) % 24);
+            }
+            return arr;
+        }
+
+        // open dialog to add event at hour h
+        function openAddEventDialog(h) {
+            const title = prompt(`Add event for ${formatHourLabel(h)} (leave blank to cancel)`);
+            if (!title) return;
+            const ev = { title };
+            plannerEvents[h] = ev;
+            ls('hh_planner_events', plannerEvents);
+            renderPlannerEvents();
+        }
+
+        function openEditEventDialog(h) {
+            const current = plannerEvents[h];
+            if (!current) return;
+            const newTitle = prompt('Edit event title (leave blank to delete):', current.title);
+            if (newTitle === null) return;
+            if (newTitle.trim() === '') {
+                plannerEvents[h] = null;
+            } else {
+                plannerEvents[h].title = newTitle.trim();
+            }
+            ls('hh_planner_events', plannerEvents);
+            renderPlannerEvents();
+        }
+
+        // ---------- Sleep controls ----------
+        function applySleep() {
+            const start = sleepStartInput.value || '23:00';
+            let hours = parseFloat(sleepHoursInput.value) || 7;
+            hours = Math.max(4, Math.min(10, hours));
+            sleep = { start, hours };
+            ls('hh_sleep', sleep);
+            renderPlannerEvents();
+        }
+        function resetSleep() {
+            sleep = { start: '23:00', hours: 7 };
+            sleepStartInput.value = sleep.start;
+            sleepHoursInput.value = sleep.hours;
+            ls('hh_sleep', sleep);
+            renderPlannerEvents();
+        }
+
+        // ---------- Tasks CRUD ----------
+        function renderTasks() {
+            taskList.innerHTML = '';
+            if (tasks.length === 0) {
+                taskList.innerHTML = '<div class="small-muted">No tasks yet</div>';
+                updateProgress();
+                return;
+            }
+            // sort by due date then priority
+            const sorted = tasks.slice().sort((a, b) => {
+                if (!a.due && b.due) return 1;
+                if (a.due && !b.due) return -1;
+                if (a.due && b.due) {
+                    if (a.due === b.due) return 0;
+                    return a.due < b.due ? -1 : 1;
+                }
+                return 0;
+            });
+            sorted.forEach(t => {
+                const el = document.createElement('div');
+                el.className = 'task';
+                if (t.status === 'completed') el.classList.add('done');
+                el.innerHTML = `
+          <div class="left">
+            <div style="width:8px;height:8px;border-radius:4px;background:${priorityColor(t.priority)}"></div>
+            <div style="margin-left:6px">
+              <div style="font-weight:700">${escapeHtml(t.title)}</div>
+              <div class="small-muted">${t.due ? (t.due + (t.time ? ' • ' + t.time : '')) : 'No due date'}</div>
+            </div>
+          </div>
+          <div class="task-controls">
+            <div class="badge ${'priority-' + t.priority}">${t.priority}</div>
+            <div class="${t.status === 'completed' ? 'status-completed' : 'status-pending'}">${t.status}</div>
+            <button class="btn ghost" data-id="${t.id}" onclick="editTaskPrompt('${t.id}')">Edit</button>
+            <button class="btn ghost" data-id="${t.id}" onclick="toggleTaskStatus('${t.id}')">Toggle</button>
+            <button class="btn ghost" data-id="${t.id}" onclick="deleteTask('${t.id}')">Delete</button>
+          </div>
+        `;
+                taskList.appendChild(el);
+            });
+            updateProgress();
+        }
+
+        // helpers used by inline onclick (we expose them)
+        window.editTaskPrompt = function (id) {
+            const t = tasks.find(x => x.id === id);
+            if (!t) return;
+            const newTitle = prompt('Edit task title:', t.title);
+            if (newTitle === null) return;
+            t.title = newTitle.trim() || t.title;
+            // edit priority & due & time & status quickly via prompts (simple)
+            const newPriority = prompt('Priority (high/medium/low):', t.priority) || t.priority;
+            t.priority = ['high', 'medium', 'low'].includes(newPriority) ? newPriority : t.priority;
+            const nd = prompt('Due date (YYYY-MM-DD) or blank:', t.due || '');
+            t.due = nd ? nd : null;
+            const nt = prompt('Time (HH:MM) or blank:', t.time || '');
+            t.time = nt ? nt : null;
+            // optional reminder
+            const rem = prompt('Set reminder? type datetime as YYYY-MM-DD HH:MM or blank to skip:', '');
+            if (rem) {
+                const [d, tm] = rem.split(' ');
+                if (d && tm) {
+                    scheduleReminderForTask(id, rem);
+                }
+            }
+            persistTasks();
+            renderTasks();
+            renderWeeklyStats();
+        };
+
+        window.toggleTaskStatus = function (id) {
+            const t = tasks.find(x => x.id === id);
+            if (!t) return;
+            t.status = (t.status === 'completed') ? 'pending' : 'completed';
+            persistTasks();
+            renderTasks();
+            renderWeeklyStats();
+        };
+
+        window.deleteTask = function (id) {
+            if (!confirm('Delete task?')) return;
+            tasks = tasks.filter(x => x.id !== id);
+            persistTasks();
+            renderTasks();
+            renderWeeklyStats();
+        };
+
+        function priorityColor(p) {
+            if (p === 'high') return '#ef9a9a';
+            if (p === 'medium') return '#ffe0b2';
+            return '#c8e6c9';
+        }
+
+        // add task
+        $('addTask').addEventListener('click', () => {
+            const title = $('taskTitle').value.trim();
+            if (!title) { alert('Enter a task title'); return; }
+            const priority = $('taskPriority').value;
+            const status = $('taskStatus').value;
+            const due = $('taskDue').value || null;
+            const time = $('taskTime').value || null;
+            const id = 't' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+            const t = { id, title, priority, status, due, time, created: new Date().toISOString() };
+            tasks.push(t);
+            $('taskTitle').value = '';
+            $('taskTime').value = '';
+            $('taskDue').value = '';
+            persistTasks();
+            renderTasks();
+            renderWeeklyStats();
+            // if task has time & due, schedule reminder automatically (if date/time is provided)
+            if (t.due && t.time) {
+                scheduleReminderForTask(t.id, t.due + ' ' + t.time);
+            }
+        });
+
+        function persistTasks() { ls('hh_tasks', tasks); }
+
+        // ---------- Reminders ----------
+        function scheduleReminderForTask(taskId, datetimeStr) {
+            // datetimeStr format: "YYYY-MM-DD HH:MM"
+            const dt = new Date(datetimeStr.replace(' ', 'T'));
+            if (isNaN(dt)) return;
+            const now = new Date();
+            const diff = dt - now;
+            if (diff <= 0) {
+                // immediate
+                fireReminder({ text: `Reminder: ${taskId}`, taskId });
+                return;
+            }
+            // create reminder object
+            const id = 'r' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+            const r = { id, text: `Task reminder`, taskId, datetime: dt.toISOString(), triggered: false };
+            reminders.push(r);
+            ls('hh_reminders', reminders);
+            scheduleTimerForReminder(r);
+            renderReminders();
+        }
+
+        function scheduleTimerForReminder(r) {
+            // cancel existing if present
+            if (reminderTimers[r.id]) clearTimeout(reminderTimers[r.id]);
+            const dt = new Date(r.datetime);
+            const diff = dt - new Date();
+            if (diff <= 0) return;
+            // setTimeout (note: works only while page/tab is open)
+            reminderTimers[r.id] = setTimeout(() => {
+                fireReminder(r);
+                r.triggered = true;
+                ls('hh_reminders', reminders);
+                renderReminders();
+            }, diff);
+        }
+
+        function fireReminder(r) {
+            // try Notification API
+            const task = tasks.find(t => t.id === r.taskId);
+            const text = task ? `Reminder: ${task.title}` : (r.text || 'Reminder');
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification('HostelHub Reminder', { body: text });
+            } else {
+                alert(text);
+            }
+        }
+
+        function renderReminders() {
+            reminderList.innerHTML = '';
+            if (reminders.length === 0) {
+                reminderList.textContent = 'No reminders set';
+                return;
+            }
+            reminders.slice().sort((a, b) => new Date(a.datetime) - new Date(b.datetime)).forEach(r => {
+                const el = document.createElement('div');
+                el.className = 'small-muted';
+                const dt = new Date(r.datetime);
+                el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+          <div>${(tasks.find(t => t.id === r.taskId)?.title || 'Quick reminder')}</div>
+          <div style="text-align:right"><div style="font-size:12px">${dt.toLocaleString()}</div>
+          <div style="font-size:12px">${r.triggered ? '<span style="color:var(--muted)">Triggered</span>' : '<button class="btn ghost" data-id="' + r.id + '">Cancel</button>'}</div></div>
+        </div>`;
+                reminderList.appendChild(el);
+                if (!r.triggered) {
+                    el.querySelector('button')?.addEventListener('click', () => {
+                        clearReminderById(r.id);
+                        renderReminders();
+                    });
+                }
+            });
+        }
+
+        function clearReminderById(id) {
+            reminders = reminders.filter(x => x.id !== id);
+            ls('hh_reminders', reminders);
+            if (reminderTimers[id]) clearTimeout(reminderTimers[id]);
+            delete reminderTimers[id];
+        }
+
+        // quick reminder set
+        setQuickRemBtn.addEventListener('click', () => {
+            const text = $('quickRemText').value.trim();
+            const date = $('quickRemDate').value;
+            const time = $('quickRemTime').value;
+            if (!text || !date || !time) { alert('Enter reminder text, date and time'); return; }
+            const id = 'r' + Date.now();
+            const dt = new Date(date + 'T' + time);
+            const r = { id, text, datetime: dt.toISOString(), triggered: false };
+            reminders.push(r);
+            ls('hh_reminders', reminders);
+            scheduleTimerForReminder(r);
+            renderReminders();
+            $('quickRemText').value = ''; $('quickRemDate').value = ''; $('quickRemTime').value = '';
+            alert('Reminder set');
+        });
+
+        clearRemsBtn.addEventListener('click', () => {
+            if (!confirm('Clear all reminders?')) return;
+            reminders.forEach(r => { if (reminderTimers[r.id]) clearTimeout(reminderTimers[r.id]); });
+            reminders = [];
+            ls('hh_reminders', reminders);
+            renderReminders();
+        });
+
+        // on startup schedule existing reminders
+        function scheduleAllReminders() {
+            reminders.forEach(r => {
+                if (!r.triggered) scheduleTimerForReminder(r);
+            });
+        }
+
+        // ---------- Progress Tracker & Weekly Dashboard ----------
+        function updateProgress() {
+            const total = tasks.length;
+            const done = tasks.filter(t => t.status === 'completed').length;
+            const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+            progressFill.style.width = pct + '%';
+            progressText.textContent = `${done} / ${total} tasks • ${pct}%`;
+        }
+
+        function renderWeeklyStats() {
+            // build 7-day window counts (Mon-Sun). We'll count tasks with due dates that fall in each day and completed tasks
+            const stats = {};
+            const today = new Date();
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(today);
+                d.setDate(today.getDate() - today.getDay() + i); // week starting Sunday
+                const key = d.toISOString().slice(0, 10);
+                stats[key] = { total: 0, done: 0, label: d.toLocaleDateString(undefined, { weekday: 'short' }) };
+            }
+            tasks.forEach(t => {
+                if (t.due) {
+                    const key = t.due;
+                    if (stats[key]) { stats[key].total++; if (t.status === 'completed') stats[key].done++; }
+                }
+            });
+            weekStats.innerHTML = '';
+            for (const key in stats) {
+                const s = stats[key];
+                const el = document.createElement('div');
+                el.innerHTML = `<div style="display:flex;justify-content:space-between;font-size:13px"><div>${s.label}</div><div>${s.done}/${s.total}</div></div>
+          <div class="bar" style="margin-top:6px"><div class="bar-fill" style="width:${s.total ? Math.round((s.done / s.total) * 100) : 0}%"></div></div>`;
+                weekStats.appendChild(el);
+            }
+            // weekly summary box
+            const totalWeek = Object.values(stats).reduce((a, b) => a + b.total, 0);
+            const doneWeek = Object.values(stats).reduce((a, b) => a + b.done, 0);
+            weeklySummary.innerHTML = `<div style="font-weight:700">${doneWeek} / ${totalWeek} completed this week</div>`;
+        }
+
+        // ---------- Notes ----------
+        saveNotesBtn.addEventListener('click', () => {
+            localStorage.setItem('hh_notes', notesArea.value || '');
+            alert('Notes saved');
+        });
+
+        // ---------- Clear Day ----------
+        clearDayBtn.addEventListener('click', () => {
+            if (!confirm('Clear all planner events for the day?')) return;
+            plannerEvents = Array(24).fill(null);
+            ls('hh_planner_events', plannerEvents);
+            renderPlannerEvents();
+        });
+
+        // ---------- Persistence & startup ----------
+        function persistAll() {
+            ls('hh_planner_events', plannerEvents);
+            ls('hh_tasks', tasks);
+            ls('hh_sleep', sleep);
+            ls('hh_reminders', reminders);
+            localStorage.setItem('hh_notes', notesArea.value || '');
+        }
+
+        // load initial values
+        function startup() {
+            // fill hours grid
+            buildHoursGrid();
+            // apply sleep values to UI
+            sleepStartInput.value = sleep.start || '23:00';
+            sleepHoursInput.value = sleep.hours || 7;
+            // render tasks
+            renderTasks();
+            // render reminders
+            renderReminders();
+            scheduleAllReminders();
+            // notes
+            notesArea.value = localStorage.getItem('hh_notes') || '';
+            renderWeeklyStats();
+            updateProgress();
+            // wire buttons
+            applySleepBtn.addEventListener('click', () => {
+                applySleep();
+                alert('Sleep block updated');
+            });
+            resetSleepBtn.addEventListener('click', () => {
+                resetSleep();
+                alert('Sleep reset to default');
+            });
+        }
+
+        // ---------- helper: escape HTML ----------
+        function escapeHtml(s) {
+            return (s + '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": "&#39;" }[c]));
+        }
+
+        // ---------- startup call ----------
+        startup();
+
+        // expose some debug helpers to console if needed
+        window.hh = { tasks, plannerEvents, sleep, reminders, persistAll };
+
+        // update UI when tasks array changes externally (rare)
+        setInterval(() => { renderTasks(); renderWeeklyStats(); updateProgress(); }, 5000);
+
+        // make sure reminders persist timers after reload
+        window.addEventListener('load', scheduleAllReminders);
+
+    </script>
+</body>
+
+</html>
